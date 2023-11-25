@@ -1,0 +1,55 @@
+---
+- name: Install PostgreSQL packages
+  apt:
+    name: "{{ postgres_packages }}"
+    state: present
+
+- name: Install psycopg2
+  pip:
+    name: psycopg2-binary
+    executable: /usr/bin/pip3
+
+- name: Ensure PostgreSQL is running
+  service:
+    name: postgresql
+    state: started
+    enabled: yes
+
+- name: Change the Postgres network binding
+  lineinfile:
+    path: "{{ postgresql_conf_path }}"
+    regexp: '# listen_addresses'
+    line: "listen_addresses = '*'"
+
+- name: Allow trust authentication for the postgres user
+  lineinfile:
+    path: "{{ pg_hba_conf_path }}"
+    line: "local all postgres trust"
+    state: present
+  notify:
+    - restart postgresql
+
+- name: Set password for the postgres user
+  become: yes
+  become_user: "{{ postgres_user }}"
+  postgresql_user:
+    name: "{{ postgres_user }}"
+    password: "{{ postgres_password }}"
+
+- name: Create a PostgreSQL user
+  become_user: "{{ postgres_user }}"
+  postgresql_user:
+    name: "{{ twoge_db_user }}"
+
+- name: Create a PostgreSQL database
+  become_user: postgres
+  postgresql_db:
+    name: "{{ twoge_db_name }}"
+    owner: "{{ twoge_db_user }}"
+
+- name: Create .env file in twoge directory
+  copy:
+    dest: "/home/ubuntu/twoge/.env"
+    content: |
+      SQLALCHEMY_DATABASE_URI = "{{ database_url }}"
+    mode: '0644'

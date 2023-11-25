@@ -1,0 +1,7 @@
+stephan.pem
+secret_vars.yml
+terraform/.terraform
+terraform/.vscode
+terraform/.terraform.lock.hcl
+terraform/terraform.tfstate.backup
+terraform/terraform.tfstate

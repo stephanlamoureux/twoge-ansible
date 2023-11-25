@@ -1,0 +1,10 @@
+---
+postgres_packages:
+  - postgresql
+  - postgresql-contrib
+pg_hba_conf_path: "/etc/postgresql/14/main/pg_hba.conf"
+postgresql_conf_path: "/etc/postgresql/14/main/postgresql.conf"
+twoge_db_user: twoge
+twoge_db_name: twogedb
+twoge_db_hostname: "ec2-3-70-133-61.eu-central-1.compute.amazonaws.com"
+database_url: "postgresql://{{ postgres_user }}:{{ postgres_password }}@{{ twoge_db_hostname }}:5432/{{ twoge_db_name }}"
